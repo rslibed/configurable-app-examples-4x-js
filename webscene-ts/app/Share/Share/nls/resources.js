@@ -10,6 +10,7 @@ define({
     label: "Share",
     clipboard: "Copy to clipboard",
     generateLink: "Generate link",
+    clickToGenerate: "Click to generate link"
   },
   ja: 1
 });

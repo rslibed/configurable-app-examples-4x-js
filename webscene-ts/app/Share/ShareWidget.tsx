@@ -149,7 +149,7 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
-  //  view
+  //  View
   //
   //----------------------------------
 
@@ -226,16 +226,45 @@ class Share extends declared(Widget) {
     const inputSubheader = this.linkGenerated
       ? i18n.clipboard
       : i18n.generateLink;
-    const generateLinkNode = (
-      <button
+    const copyIconNode = (
+      <div
+        bind={this}
+        onclick={this._copyUrl}
+        onkeydown={this._copyUrl}
+        role="button"
+        tabIndex={0}
+        class={CSS.main.mainCopy.copyClipboard}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          class={this.classes(CSS.icons.svgIcon, CSS.icons.copyIcon)}
+        >
+          <path d="M22.801 0H10v6H2v26h20v-6h8V7.199L22.801 0zM20 24v6H4V8h8v8h8v8zm0-10h-6V8h.621L20 13.381V14zm8 10h-6V13.199L14.801 6H12V2h8v8h8v14zm0-16h-6V2h.621L28 7.381V8zM6 26h12v2H6v-2zm0-4h12v2H6v-2zm0-4h12v2H6v-2zm0-4h4v2H6v-2z" />
+        </svg>
+      </div>
+    );
+    const shortenIconNode = (
+      <div
         bind={this}
         onclick={this._shortenShareUrl}
         onkeydown={this._shortenShareUrl}
+        role="button"
         tabIndex={0}
         class={CSS.main.mainShorten.shortenUrl}
       >
-        {i18n.generateLink}
-      </button>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 32 32"
+          class={this.classes(CSS.icons.svgIcon, CSS.icons.shortenIcon)}
+        >
+          <path d="M27.443 9.439l-4.955-4.953 1.652-1.65a2.337 2.337 0 0 1 3.301 0l1.648 1.65a2.33 2.33 0 0 1 .004 3.299l-1.65 1.654zM4.924 22.195l-2.373 7.254 7.328-2.301-4.955-4.953zM20.455 6.713L7.379 19.555l4.951 4.949 13.074-12.842-4.949-4.949z" />
+        </svg>
+      </div>
     );
     const loadingIconNode = this.shortenLinkEnabled ? (
       loading ? (
@@ -256,21 +285,7 @@ class Share extends declared(Widget) {
         </div>
       ) : null
     ) : null;
-    const copyShortenNode = this.linkGenerated ? (
-      <input
-        class={CSS.main.mainUrl.urlInput}
-        bind={this}
-        onclick={this._copyUrl}
-        onkeydown={this._copyUrl}
-        type="text"
-        value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
-        afterCreate={storeNode}
-        data-node-ref="_urlNode"
-        readOnly
-      />
-    ) : (
-      generateLinkNode
-    );
+    const copyShortenNode = this.linkGenerated ? copyIconNode : shortenIconNode;
     return (
       <div class={CSS.base}>
         <div class={CSS.header.container}>
@@ -295,8 +310,17 @@ class Share extends declared(Widget) {
               {this.shortenLinkEnabled ? inputSubheader : i18n.clipboard}
             </h2>
             <div class={CSS.main.mainUrl.inputGroup}>
+              {this.shortenLinkEnabled ? copyShortenNode : copyIconNode}
               {this.shortenLinkEnabled ? (
-                copyShortenNode
+                <input
+                  class={CSS.main.mainUrl.urlInput}
+                  type="text"
+                  value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
+                  afterCreate={storeNode}
+                  bind={this}
+                  data-node-ref="_urlNode"
+                  readOnly
+                />
               ) : (
                 <input
                   class={CSS.main.mainUrl.urlInput}
@@ -304,8 +328,6 @@ class Share extends declared(Widget) {
                   value={this.shareUrl}
                   afterCreate={storeNode}
                   bind={this}
-                  onclick={this._copyUrl}
-                  onkeydown={this._copyUrl}
                   data-node-ref="_urlNode"
                   readOnly
                 />
