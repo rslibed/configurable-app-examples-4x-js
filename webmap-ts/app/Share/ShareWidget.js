@@ -194,7 +194,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         widget_1.tsx("h2", { class: CSS.main.mainHeader }, this.shortenLinkEnabled ? inputSubheader : i18n.clipboard),
                         widget_1.tsx("div", { class: CSS.main.mainUrl.inputGroup },
                             this.shortenLinkEnabled ? copyShortenNode : copyIconNode,
-                            this.shortenLinkEnabled ? (widget_1.tsx("input", { class: CSS.main.mainUrl.urlInput, type: "text", value: this.shortenedUrl ? this.shortenedUrl : this.shareUrl, afterCreate: widget_1.storeNode, bind: this, "data-node-ref": "_urlNode", readOnly: true })) : (widget_1.tsx("input", { class: CSS.main.mainUrl.urlInput, type: "text", value: this.shareUrl, afterCreate: widget_1.storeNode, bind: this, "data-node-ref": "_urlNode", readOnly: true })))),
+                            this.shortenLinkEnabled ? (widget_1.tsx("input", { class: CSS.main.mainUrl.urlInput, type: "text", onclick: this._copyUrl, onkeydown: this._copyUrl, value: this.shortenedUrl ? this.shortenedUrl : this.shareUrl, afterCreate: widget_1.storeNode, bind: this, "data-node-ref": "_urlNode", readOnly: true })) : (widget_1.tsx("input", { class: CSS.main.mainUrl.urlInput, onclick: this._copyUrl, onkeydown: this._copyUrl, type: "text", value: this.shareUrl, afterCreate: widget_1.storeNode, bind: this, "data-node-ref": "_urlNode", readOnly: true })))),
                     widget_1.tsx("hr", { class: CSS.main.mainHR }),
                     widget_1.tsx("div", { class: CSS.main.mainShare.shareContainer },
                         widget_1.tsx("h2", { class: CSS.main.mainHeader }, i18n.subHeading),

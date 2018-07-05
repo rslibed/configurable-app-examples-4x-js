@@ -314,7 +314,6 @@ class ShareViewModel extends declared(Accessor) {
       // Otherwise return href
       return promiseUtils.resolve(href);
     }
-
     const { spatialReference } = this.view;
     // If SR is WGS84 or Web Mercator, use longitude/latitude values to create url sttring
     if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
@@ -327,11 +326,8 @@ class ShareViewModel extends declared(Accessor) {
     }
     // Otherwise, use x and y values to create point and call _projectPoint method to convert values
     const { x, y } = this.view.center;
-    const point = new Point({
-      x,
-      y
-    });
-    return this._projectPoint(point).then((convertedPoint: Point) => {
+    const pointToConvert = new Point({ x, y, spatialReference });
+    return this._projectPoint(pointToConvert).then((convertedPoint: Point) => {
       return this._createUrlString(convertedPoint);
     });
   }

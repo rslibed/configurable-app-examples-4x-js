@@ -97,8 +97,10 @@ class ShareViewModel extends declared(Accessor) {
     this._handles.add([
       watchUtils.whenTrue(this, "view.ready", () => {
         if (this.shortenLinkEnabled) {
-          this._generateShareUrl().then(() => {
-            this.shorten().then(res => this._set("shareUrl", res));
+          this._generateShareUrl().then(res => {
+            this.shorten(res).then(res => {
+              this._set("shareUrl", res);
+            });
           });
         } else {
           this._generateShareUrl().then(res => {
@@ -261,13 +263,13 @@ class ShareViewModel extends declared(Accessor) {
   //
   //----------------------------------
 
-  shorten(): IPromise<string> {
+  shorten(url?: string): IPromise<string> {
     this._set("loading", true);
     // Uses share Url and making a request to URL shorten API and set new values to properties
     return esriRequest(SHORTEN_API, {
       callbackParamName: "callback",
       query: {
-        longUrl: this.shareUrl,
+        longUrl: url ? url : this.shareUrl,
         f: "json"
       }
     })
@@ -314,7 +316,6 @@ class ShareViewModel extends declared(Accessor) {
       // Otherwise return href
       return promiseUtils.resolve(href);
     }
-
     const { spatialReference } = this.view;
     // If SR is WGS84 or Web Mercator, use longitude/latitude values to create url sttring
     if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
@@ -327,11 +328,8 @@ class ShareViewModel extends declared(Accessor) {
     }
     // Otherwise, use x and y values to create point and call _projectPoint method to convert values
     const { x, y } = this.view.center;
-    const point = new Point({
-      x,
-      y
-    });
-    return this._projectPoint(point).then((convertedPoint: Point) => {
+    const pointToConvert = new Point({ x, y, spatialReference });
+    return this._projectPoint(pointToConvert).then((convertedPoint: Point) => {
       return this._createUrlString(convertedPoint);
     });
   }

@@ -315,6 +315,8 @@ class Share extends declared(Widget) {
                 <input
                   class={CSS.main.mainUrl.urlInput}
                   type="text"
+                  onclick={this._copyUrl}
+                  onkeydown={this._copyUrl}
                   value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
                   afterCreate={storeNode}
                   bind={this}
@@ -324,6 +326,8 @@ class Share extends declared(Widget) {
               ) : (
                 <input
                   class={CSS.main.mainUrl.urlInput}
+                  onclick={this._copyUrl}
+                  onkeydown={this._copyUrl}
                   type="text"
                   value={this.shareUrl}
                   afterCreate={storeNode}

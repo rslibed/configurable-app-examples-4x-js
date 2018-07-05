@@ -142,8 +142,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this._handles.add([
                 watchUtils.whenTrue(this, "view.ready", function () {
                     if (_this.shortenLinkEnabled) {
-                        _this._generateShareUrl().then(function () {
-                            _this.shorten().then(function (res) { return _this._set("shareUrl", res); });
+                        _this._generateShareUrl().then(function (res) {
+                            _this.shorten(res).then(function (res) {
+                                _this._set("shareUrl", res);
+                            });
                         });
                     }
                     else {
@@ -200,14 +202,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //  Public Methods
         //
         //----------------------------------
-        ShareViewModel.prototype.shorten = function () {
+        ShareViewModel.prototype.shorten = function (url) {
             var _this = this;
             this._set("loading", true);
             // Uses share Url and making a request to URL shorten API and set new values to properties
             return esriRequest(SHORTEN_API, {
                 callbackParamName: "callback",
                 query: {
-                    longUrl: this.shareUrl,
+                    longUrl: url ? url : this.shareUrl,
                     f: "json"
                 }
             })
@@ -256,19 +258,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             // If SR is WGS84 or Web Mercator, use longitude/latitude values to create url sttring
             if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
                 var _a = this.view.center, longitude = _a.longitude, latitude = _a.latitude;
-                var point_1 = new Point({
+                var point = new Point({
                     longitude: longitude,
                     latitude: latitude
                 });
-                return promiseUtils.resolve(this._createUrlString(point_1));
+                return promiseUtils.resolve(this._createUrlString(point));
             }
             // Otherwise, use x and y values to create point and call _projectPoint method to convert values
             var _b = this.view.center, x = _b.x, y = _b.y;
-            var point = new Point({
-                x: x,
-                y: y
-            });
-            return this._projectPoint(point).then(function (convertedPoint) {
+            var pointToConvert = new Point({ x: x, y: y, spatialReference: spatialReference });
+            return this._projectPoint(pointToConvert).then(function (convertedPoint) {
                 return _this._createUrlString(convertedPoint);
             });
         };

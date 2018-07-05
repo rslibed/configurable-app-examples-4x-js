@@ -23,7 +23,10 @@
     "oauthappid",
     "portalUrl",
     "viewpoint",
-    "webscene"
+    "webscene",
+    "heading",
+    "fov",
+    "tilt"
   ],
   "webMap": {
     "default": "1970c1995b8f44749f4b9b6e81b5ba45",
