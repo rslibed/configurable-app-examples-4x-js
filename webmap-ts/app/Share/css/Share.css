@@ -1,0 +1,152 @@
+.esri-share {
+  color: #949494;
+  background: #fff;
+  box-sizing: border-box;
+  width: 250px;
+}
+.esri-share .esri-share__header-container {
+  border-bottom: 1px solid #949494;
+}
+.esri-share .esri-share__header-container .esri-share__heading {
+  padding: 3% 4%;
+  margin: 0;
+  font-size: 1.2em;
+  width: 100%;
+}
+.esri-share .esri-share__header-container .esri-share--loading {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-size: 15px;
+}
+.esri-share .esri-share__main-container {
+  padding: 0 5% 5%;
+}
+.esri-share .esri-share__main-container .esri-share__main-header {
+  margin-bottom: 10px;
+  font-size: 0.85em;
+  font-style: italic;
+  font-weight: normal;
+}
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__copy-clipboard,
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__shorten-url {
+  width: 100%;
+  padding: 6px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  border: none;
+  color: #fff;
+  display: inline-block;
+  height: 30px;
+  vertical-align: top;
+  transition: background-color 200ms linear;
+  transition-property: background-color;
+  transition-duration: 200ms;
+  transition-timing-function: linear;
+  transition-delay: initial;
+}
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__copy-clipboard .esri-share__copy-icon,
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__copy-clipboard .esri-share__shorten-icon,
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__shorten-url .esri-share__copy-icon,
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__shorten-url .esri-share__shorten-icon {
+  display: inline-block;
+  width: 20px;
+  padding: 2%;
+  height: 30px;
+}
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__copy-clipboard:hover {
+  background-color: gold;
+  cursor: pointer;
+}
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__shorten-url:hover {
+  background-color: #5cb85c;
+  cursor: pointer;
+}
+.esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__url-input {
+  display: inline-block;
+  padding-left: 5px;
+  width: 100%;
+  margin: 0;
+  padding: 5px;
+  height: 30px;
+  border: 1px solid #d3d3d3;
+  vertical-align: top;
+}
+.esri-share .esri-share__main-container .esri-share__hr {
+  margin: 0.7rem 0;
+}
+.esri-share .esri-share__main-container .esri-share__share-container .esri-share__share-item {
+  list-style-type: none;
+  display: inline-block;
+  width: 25%;
+  text-align: center;
+}
+.esri-share .esri-share__main-container .esri-share__share-container .esri-share__share-item:hover {
+  cursor: pointer;
+}
+.esri-share .esri-share__main-container .esri-share__share-location-container {
+  margin: 3% 0;
+}
+.esri-share .esri-share__main-container .esri-share__share-location-container .esri-share__input-label {
+  display: inline-block;
+  margin: 0;
+}
+.esri-share .esri-share__main-container .esri-share__share-location-container .esri-share__input-label .esri-share__share-location {
+  background-color: #fff;
+}
+
+.esri-share__main-header,
+.esri-share__main-container {
+  margin: 0;
+}
+
+html[dir=ltr] .esri-share .esri-share__main-container .esri-share__main-header {
+  text-align: left;
+}
+html[dir=ltr] .esri-share .esri-share__main-container .esri-share__share-container .esri-share__share-location {
+  margin-left: 5px;
+}
+
+html[dir=rtl] .esri-share .esri-share__main-container .esri-share__main-header {
+  text-align: right;
+}
+html[dir=rtl] .esri-share .esri-share__main-container .esri-share__share-container .esri-share__share-location {
+  margin-right: 5px;
+}
+
+.esri-share--loading-icon {
+  width: 20px;
+}
+
+@keyframes looping-progresss-bar-ani {
+  0% {
+    left: 0%;
+    width: 0%;
+  }
+  10% {
+    left: 0%;
+    width: 10%;
+  }
+  90% {
+    left: 90%;
+    width: 10%;
+  }
+  100% {
+    left: 100%;
+    width: 0%;
+  }
+}
+.esri-share--esri-rotating {
+  animation: esri-anim-rotate 1250ms infinite linear;
+}
+
+@keyframes esri-anim-rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/*# sourceMappingURL=webscene-ts/app/Share/css/Share.css.map */

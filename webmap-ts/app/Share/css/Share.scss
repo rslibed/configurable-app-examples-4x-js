@@ -1,0 +1,179 @@
+$text-color: #949494;
+$border-color: #949494;
+$background-color: #fff;
+$heading-font-size: 1.2em;
+.esri-share {
+  color: $text-color;
+  background: $background-color;
+  box-sizing: border-box;
+  width: 250px;
+  .esri-share__header-container {
+    border-bottom: 1px solid $border-color;
+    .esri-share__heading {
+      padding: 3% 4%;
+      margin: 0;
+      font-size: $heading-font-size;
+      width: 100%;
+    }
+    .esri-share--loading {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      font-size: 15px;
+    }
+  }
+  .esri-share__main-container {
+    padding: 0 5% 5%;
+    .esri-share__main-header {
+      margin-bottom: 10px;
+      font-size: 0.85em;
+      font-style: italic;
+      font-weight: normal;
+    }
+    .esri-share__copy-container {
+      .esri-share__copy-url-group {
+        .esri-share__copy-clipboard,
+        .esri-share__shorten-url {
+          width: 100%;
+          padding: 6px;
+          text-align: center;
+          background-color: rgba(0, 0, 0, 0.45);
+          border: none;
+          color: #fff;
+          display: inline-block;
+          height: 30px;
+          vertical-align: top;
+          transition: background-color 200ms linear;
+          transition-property: background-color;
+          transition-duration: 200ms;
+          transition-timing-function: linear;
+          transition-delay: initial;
+          .esri-share__copy-icon,
+          .esri-share__shorten-icon {
+            display: inline-block;
+            width: 20px;
+            padding: 2%;
+            height: 30px;
+          }
+        }
+        .esri-share__copy-clipboard:hover {
+          background-color: gold;
+          cursor: pointer
+        }
+        .esri-share__shorten-url:hover {
+          background-color: #5cb85c;
+          cursor: pointer
+        }
+        .esri-share__url-input {
+          display: inline-block;
+          padding-left: 5px;
+          width: 100%;
+          margin: 0;
+          padding: 5px;
+          height: 30px;
+          border: 1px solid #d3d3d3;
+          vertical-align: top;
+        }
+      }
+    }
+    .esri-share__hr {
+      margin: 0.7rem 0;
+    }
+    .esri-share__share-container {
+      .esri-share__share-item {
+        list-style-type: none;
+        display: inline-block;
+        width: 25%;
+        text-align: center;
+      }
+      .esri-share__share-item:hover {
+        cursor: pointer;
+      }
+    }
+    .esri-share__share-location-container {
+      margin: 3% 0;
+      .esri-share__input-label {
+        display: inline-block;
+        margin: 0;
+        .esri-share__share-location {
+          background-color: $background-color;
+        }
+      }
+    }
+  }
+}
+
+.esri-share__main-header,
+.esri-share__main-container {
+  margin: 0;
+}
+
+html[dir="ltr"] {
+  .esri-share {
+    .esri-share__main-container {
+      .esri-share__main-header {
+        text-align: left;
+      }
+      .esri-share__share-container {
+        .esri-share__share-location {
+          margin-left: 5px;
+        }
+      }
+    }
+  }
+}
+
+html[dir="rtl"] {
+  .esri-share {
+    .esri-share__main-container {
+      .esri-share__main-header {
+        text-align: right;
+      }
+      .esri-share__share-container {
+        .esri-share__share-location {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}
+
+.esri-share--loading-icon {
+  width: 20px;
+}
+
+@mixin _loopingProgressBar($width) {
+  @keyframes looping-progresss-bar-ani {
+    #{0%} {
+      left: 0%;
+      width: 0%;
+    }
+    #{$width} {
+      left: 0%;
+      width: $width;
+    }
+    #{100-$width} {
+      left: 100% - $width;
+      width: $width;
+    }
+    #{100%} {
+      left: 100%;
+      width: 0%;
+    }
+  }
+}
+
+$looping_progress_bar_width: 10% !default;
+@include _loopingProgressBar($looping_progress_bar_width);
+.esri-share--esri-rotating {
+  animation: esri-anim-rotate 1250ms infinite linear;
+}
+
+@keyframes esri-anim-rotate {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

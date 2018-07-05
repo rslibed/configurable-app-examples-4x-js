@@ -27,7 +27,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper"], function (require, exports, itemUtils_1, domHelper_1) {
+define(["require", "exports", "Share/ShareWidget", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper"], function (require, exports, ShareWidget, itemUtils_1, domHelper_1) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading"
@@ -72,7 +72,7 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
             domHelper_1.setPageTitle(config.title);
             // todo: Typings will be fixed in next release.
             var portalItem = this.base.results.applicationItem.value;
-            var appProxies = (portalItem && portalItem.appProxies) ? portalItem.appProxies : null;
+            var appProxies = portalItem && portalItem.appProxies ? portalItem.appProxies : null;
             var viewContainerNode = document.getElementById("viewContainer");
             var defaultViewProperties = itemUtils_1.getConfigViewProperties(config);
             validWebSceneItems.forEach(function (item) {
@@ -83,10 +83,17 @@ define(["require", "exports", "ApplicationBase/support/itemUtils", "ApplicationB
                 };
                 var viewProperties = __assign({}, defaultViewProperties, container);
                 var basemapUrl = config.basemapUrl, basemapReferenceUrl = config.basemapReferenceUrl;
-                itemUtils_1.createMapFromItem({ item: item, appProxies: appProxies })
-                    .then(function (map) { return itemUtils_1.createView(__assign({}, viewProperties, { map: map }))
-                    .then(function (view) { return itemUtils_1.findQuery(find, view)
-                    .then(function () { return itemUtils_1.goToMarker(marker, view); }); }); });
+                itemUtils_1.createMapFromItem({ item: item, appProxies: appProxies }).then(function (map) {
+                    return itemUtils_1.createView(__assign({}, viewProperties, { map: map })).then(function (view) {
+                        var shareContainer = document.createElement("div");
+                        var share = new ShareWidget({
+                            view: view,
+                            container: shareContainer
+                        });
+                        view.ui.add(share, "top-right");
+                        itemUtils_1.findQuery(find, view).then(function () { return itemUtils_1.goToMarker(marker, view); });
+                    });
+                });
             });
             document.body.classList.remove(CSS.loading);
         };

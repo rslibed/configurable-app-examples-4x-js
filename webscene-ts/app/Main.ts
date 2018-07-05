@@ -24,6 +24,8 @@ import ApplicationBase = require("ApplicationBase/ApplicationBase");
 
 import i18n = require("dojo/i18n!./nls/resources");
 
+import ShareWidget = require("Share/ShareWidget");
+
 const CSS = {
   loading: "configurable-application--loading"
 };
@@ -49,7 +51,6 @@ import {
 } from "ApplicationBase/interfaces";
 
 class SceneExample {
-
   //--------------------------------------------------------------------------
   //
   //  Properties
@@ -97,7 +98,8 @@ class SceneExample {
 
     // todo: Typings will be fixed in next release.
     const portalItem: any = this.base.results.applicationItem.value;
-    const appProxies = (portalItem && portalItem.appProxies) ? portalItem.appProxies : null;
+    const appProxies =
+      portalItem && portalItem.appProxies ? portalItem.appProxies : null;
 
     const viewContainerNode = document.getElementById("viewContainer");
     const defaultViewProperties = getConfigViewProperties(config);
@@ -116,13 +118,20 @@ class SceneExample {
       };
 
       const { basemapUrl, basemapReferenceUrl } = config;
-      createMapFromItem({ item, appProxies })
-        .then(map => createView({
+      createMapFromItem({ item, appProxies }).then(map =>
+        createView({
           ...viewProperties,
           map
+        }).then(view => {
+          const shareContainer = document.createElement("div");
+          const share = new ShareWidget({
+            view,
+            container: shareContainer
+          });
+          view.ui.add(share, "top-right");
+          findQuery(find, view).then(() => goToMarker(marker, view));
         })
-          .then(view => findQuery(find, view)
-            .then(() => goToMarker(marker, view))));
+      );
     });
 
     document.body.classList.remove(CSS.loading);
