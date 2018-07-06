@@ -142,13 +142,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this._handles.add([
                 watchUtils.whenTrue(this, "view.ready", function () {
                     if (_this.shortenLinkEnabled) {
-                        _this._generateShareUrl().then(function () {
-                            _this.shorten().then(function (res) { return _this._set("shareUrl", res); });
+                        _this._generateShareUrl().then(function (generatedUrl) {
+                            _this.shorten(generatedUrl).then(function (shortenedUrl) {
+                                return _this._set("shareUrl", shortenedUrl);
+                            });
                         });
                     }
                     else {
-                        _this._generateShareUrl().then(function (res) {
-                            _this._set("shareUrl", res);
+                        _this._generateShareUrl().then(function (generatedUrl) {
+                            _this._set("shareUrl", generatedUrl);
                         });
                     }
                 }),
@@ -200,14 +202,14 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //  Public Methods
         //
         //----------------------------------
-        ShareViewModel.prototype.shorten = function () {
+        ShareViewModel.prototype.shorten = function (url) {
             var _this = this;
             this._set("loading", true);
             // Uses share Url and making a request to URL shorten API and set new values to properties
             return esriRequest(SHORTEN_API, {
                 callbackParamName: "callback",
                 query: {
-                    longUrl: this.shareUrl,
+                    longUrl: url ? url : this.shareUrl,
                     f: "json"
                 }
             })
@@ -266,7 +268,8 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var _b = this.view.center, x = _b.x, y = _b.y;
             var point = new Point({
                 x: x,
-                y: y
+                y: y,
+                spatialReference: spatialReference
             });
             return this._projectPoint(point).then(function (convertedPoint) {
                 return _this._createUrlString(convertedPoint);

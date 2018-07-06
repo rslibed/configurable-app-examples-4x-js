@@ -112,6 +112,15 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
+  //  loading - readOnly
+  //
+  //----------------------------------
+  @aliasOf("viewModel.loading")
+  @renderable()
+  loading: boolean = null;
+
+  //----------------------------------
+  //
   //  shareUrl - readOnly
   //
   //----------------------------------
@@ -219,7 +228,7 @@ class Share extends declared(Widget) {
   //----------------------------------
 
   render() {
-    const { state, shareLocationEnabled, loading } = this.viewModel;
+    const { state, shareLocationEnabled } = this.viewModel;
     const shareItemNodes = this._renderShareItems();
     const shareItemNode =
       state === "ready" && shareItemNodes.length ? [shareItemNodes] : null;
@@ -238,7 +247,7 @@ class Share extends declared(Widget) {
       </button>
     );
     const loadingIconNode = this.shortenLinkEnabled ? (
-      loading ? (
+      this.loading ? (
         <div class={CSS.main.mainShorten.loading}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -327,12 +336,6 @@ class Share extends declared(Widget) {
     this.viewModel.shareLocationEnabled = !this.viewModel.shareLocationEnabled;
   }
 
-  private _shortenShareUrl(): IPromise<string> {
-    return this.viewModel.shorten().then(shortenedUrl => {
-      return shortenedUrl;
-    });
-  }
-
   @accessibleHandler()
   private _copyUrl(): void {
     this._urlNode.select();
@@ -358,6 +361,12 @@ class Share extends declared(Widget) {
       return;
     }
     this._openUrl(this.shareUrl, title, summary, urlTemplate);
+  }
+
+  private _shortenShareUrl(): IPromise<string> {
+    return this.viewModel.shorten().then(shortenedUrl => {
+      return shortenedUrl;
+    });
   }
 
   private _openUrl(
