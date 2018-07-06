@@ -55,8 +55,7 @@ const CSS = {
       shareLocation: "esri-share__share-location"
     },
     mainCopy: {
-      copyContainer: "esri-share__copy-container",
-      copyClipboard: "esri-share__copy-clipboard"
+      copyContainer: "esri-share__copy-container"
     },
     mainShorten: {
       shortenUrl: "esri-share__shorten-url",
@@ -87,10 +86,8 @@ const CSS = {
   icons: {
     widgetIcon: "icon-ui-share",
     svgIcon: "svg-icon",
-    shortenIcon: "esri-share__shorten-icon",
     loadingIcon: "esri-share--loading-icon",
-    esriRotatingIcon: "esri-share--esri-rotating",
-    copyIcon: "esri-share__copy-icon"
+    esriRotatingIcon: "esri-share--esri-rotating"
   }
 };
 
@@ -271,6 +268,7 @@ class Share extends declared(Widget) {
         bind={this}
         onclick={this._copyUrl}
         onkeydown={this._copyUrl}
+        tabindex={0}
         type="text"
         value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
         afterCreate={storeNode}
@@ -365,6 +363,7 @@ class Share extends declared(Widget) {
 
   private _shortenShareUrl(): IPromise<string> {
     return this.viewModel.shorten().then(shortenedUrl => {
+      this._urlNode.focus();
       return shortenedUrl;
     });
   }

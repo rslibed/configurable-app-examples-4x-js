@@ -258,20 +258,20 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             // If SR is WGS84 or Web Mercator, use longitude/latitude values to create url sttring
             if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
                 var _a = this.view.center, longitude = _a.longitude, latitude = _a.latitude;
-                var point_1 = new Point({
+                var point = new Point({
                     longitude: longitude,
                     latitude: latitude
                 });
-                return promiseUtils.resolve(this._createUrlString(point_1));
+                return promiseUtils.resolve(this._createUrlString(point));
             }
             // Otherwise, use x and y values to create point and call _projectPoint method to convert values
             var _b = this.view.center, x = _b.x, y = _b.y;
-            var point = new Point({
+            var pointToConvert = new Point({
                 x: x,
                 y: y,
                 spatialReference: spatialReference
             });
-            return this._projectPoint(point).then(function (convertedPoint) {
+            return this._projectPoint(pointToConvert).then(function (convertedPoint) {
                 return _this._createUrlString(convertedPoint);
             });
         };
@@ -285,19 +285,19 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var roundedZoom = this._roundValue(zoom);
             // Check if href has "&center"
             if (href.indexOf("&center") !== -1) {
-                var url_1 = href.split("&center")[0];
-                var sep_1 = url_1.indexOf("?") === -1 ? "?" : "&";
-                var shareValues_1 = "" + url_1 + sep_1 + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
+                var path_1 = href.split("&center")[0];
+                var sep_1 = path_1.indexOf("?") === -1 ? "?" : "&";
+                var shareValues_1 = "" + path_1 + sep_1 + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
                 return this._determineViewTypeParams(shareValues_1);
             }
-            var url = href.split("center")[0];
+            var path = href.split("center")[0];
             // If no "?", then append "?". Otherwise, check for "?" and "="
-            var sep = url.indexOf("?") === -1
+            var sep = path.indexOf("?") === -1
                 ? "?"
-                : url.indexOf("?") !== -1 && url.indexOf("=") !== -1
+                : path.indexOf("?") !== -1 && path.indexOf("=") !== -1
                     ? "&"
                     : "";
-            var shareValues = "" + url + sep + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
+            var shareValues = "" + path + sep + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
             return this._determineViewTypeParams(shareValues);
         };
         ShareViewModel.prototype._projectPoint = function (point) {
