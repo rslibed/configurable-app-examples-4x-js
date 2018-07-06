@@ -142,9 +142,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             this._handles.add([
                 watchUtils.whenTrue(this, "view.ready", function () {
                     if (_this.shortenLinkEnabled) {
-                        _this._generateShareUrl().then(function (res) {
-                            _this.shorten(res).then(function (res) {
-                                _this._set("shareUrl", res);
+                        _this._generateShareUrl().then(function (generatedUrl) {
+                            _this.shorten(generatedUrl).then(function (shortenedUrl) {
+                                return _this._set("shareUrl", res);
                             });
                         });
                     }

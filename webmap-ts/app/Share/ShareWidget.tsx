@@ -112,6 +112,16 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
+  //  loading - readOnly
+  //
+  //----------------------------------
+
+  @aliasOf("viewModel.loading")
+  @renderable()
+  loading: boolean = null;
+
+  //----------------------------------
+  //
   //  shareUrl - readOnly
   //
   //----------------------------------
@@ -219,7 +229,7 @@ class Share extends declared(Widget) {
   //----------------------------------
 
   render() {
-    const { state, shareLocationEnabled, loading } = this.viewModel;
+    const { state, shareLocationEnabled } = this.viewModel;
     const shareItemNodes = this._renderShareItems();
     const shareItemNode =
       state === "ready" && shareItemNodes.length ? [shareItemNodes] : null;
@@ -267,7 +277,7 @@ class Share extends declared(Widget) {
       </div>
     );
     const loadingIconNode = this.shortenLinkEnabled ? (
-      loading ? (
+      this.loading ? (
         <div class={CSS.main.mainShorten.loading}>
           <svg
             xmlns="http://www.w3.org/2000/svg"

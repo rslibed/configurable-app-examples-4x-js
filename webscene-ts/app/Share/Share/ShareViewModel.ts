@@ -97,10 +97,10 @@ class ShareViewModel extends declared(Accessor) {
     this._handles.add([
       watchUtils.whenTrue(this, "view.ready", () => {
         if (this.shortenLinkEnabled) {
-          this._generateShareUrl().then(res => {
-            this.shorten(res).then(res => {
-              this._set("shareUrl", res);
-            });
+          this._generateShareUrl().then(generatedUrl => {
+            this.shorten(generatedUrl).then(shortenedUrl =>
+              this._set("shareUrl", res)
+            );
           });
         } else {
           this._generateShareUrl().then(res => {

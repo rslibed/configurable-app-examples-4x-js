@@ -97,8 +97,10 @@ class ShareViewModel extends declared(Accessor) {
     this._handles.add([
       watchUtils.whenTrue(this, "view.ready", () => {
         if (this.shortenLinkEnabled) {
-          this._generateShareUrl().then(() => {
-            this.shorten().then(res => this._set("shareUrl", res));
+          this._generateShareUrl().then(generatedUrl => {
+            this.shorten(generatedUrl).then(shortenedUrl =>
+              this._set("shareUrl", res)
+            );
           });
         } else {
           this._generateShareUrl().then(res => {
@@ -261,13 +263,13 @@ class ShareViewModel extends declared(Accessor) {
   //
   //----------------------------------
 
-  shorten(): IPromise<string> {
+  shorten(url?: string): IPromise<string> {
     this._set("loading", true);
     // Uses share Url and making a request to URL shorten API and set new values to properties
     return esriRequest(SHORTEN_API, {
       callbackParamName: "callback",
       query: {
-        longUrl: this.shareUrl,
+        longUrl: url ? url : this.shareUrl,
         f: "json"
       }
     })
