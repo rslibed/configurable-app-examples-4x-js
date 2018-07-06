@@ -16,7 +16,6 @@
 }
 .esri-share .esri-share__header-container .esri-share--loading {
   position: absolute;
-  right: 8px;
   top: 8px;
   font-size: 15px;
 }
@@ -99,18 +98,30 @@
   margin: 0;
 }
 
+html[dir=ltr] .esri-share .esri-share__header-container .esri-share--loading {
+  right: 8px;
+}
 html[dir=ltr] .esri-share .esri-share__main-container .esri-share__main-header {
   text-align: left;
 }
 html[dir=ltr] .esri-share .esri-share__main-container .esri-share__share-container .esri-share__share-location {
   margin-left: 5px;
 }
+html[dir=ltr] .esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__url-input {
+  padding-left: 5px;
+}
 
+html[dir=rtl] .esri-share .esri-share__header-container .esri-share--loading {
+  left: 8px;
+}
 html[dir=rtl] .esri-share .esri-share__main-container .esri-share__main-header {
   text-align: right;
 }
 html[dir=rtl] .esri-share .esri-share__main-container .esri-share__share-container .esri-share__share-location {
   margin-right: 5px;
+}
+html[dir=rtl] .esri-share .esri-share__main-container .esri-share__copy-container .esri-share__copy-url-group .esri-share__url-input {
+  padding-right: 5px;
 }
 
 .esri-share--loading-icon {
