@@ -27,7 +27,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-define(["require", "exports", "Share/ShareWidget", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper"], function (require, exports, ShareWidget, itemUtils_1, domHelper_1) {
+define(["require", "exports", "Share/ShareWidget", "Share/Share/ShareItem", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper"], function (require, exports, ShareWidget, ShareItem, itemUtils_1, domHelper_1) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading"
@@ -86,9 +86,29 @@ define(["require", "exports", "Share/ShareWidget", "ApplicationBase/support/item
                 itemUtils_1.createMapFromItem({ item: item, appProxies: appProxies }).then(function (map) {
                     return itemUtils_1.createView(__assign({}, viewProperties, { map: map })).then(function (view) {
                         var shareContainer = document.createElement("div");
+                        var PINTEREST_ITEM = new ShareItem({
+                            id: "pinterest",
+                            name: "pinterest",
+                            urlTemplate: "https://pinterest.com/pin/create/bookmarklet?&url={url}"
+                        });
+                        var REDDIT_ITEM = new ShareItem({
+                            id: "reddit",
+                            name: "Reddit",
+                            className: "icon-social-share",
+                            urlTemplate: "https://reddit.com/submit?url={url}"
+                        });
+                        var LINKED_IN = new ShareItem({
+                            id: "linkedin",
+                            name: "LinkedIn",
+                            className: "icon-social-linkedin",
+                            urlTemplate: "https://linkedin.com/shareArticle?url={url}"
+                        });
+                        var shareItems = [PINTEREST_ITEM, LINKED_IN, REDDIT_ITEM];
                         var share = new ShareWidget({
                             view: view,
                             container: shareContainer
+                            // shortenLinkEnabled: false,
+                            // shareItems
                         });
                         view.ui.add(share, "top-right");
                         itemUtils_1.findQuery(find, view).then(function () { return itemUtils_1.goToMarker(marker, view); });
