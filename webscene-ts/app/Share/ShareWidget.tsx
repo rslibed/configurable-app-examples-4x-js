@@ -32,6 +32,8 @@ import {
 } from "esri/widgets/support/widget";
 
 import ShareViewModel = require("./Share/ShareViewModel");
+
+// Share Item
 import ShareItem = require("./Share/ShareItem");
 
 //----------------------------------
@@ -276,7 +278,7 @@ class Share extends declared(Widget) {
         </svg>
       </div>
     );
-    const loadingIconNode = this.shortenLinkEnabled ? (
+    const loadingNode = this.shortenLinkEnabled ? (
       this.loading ? (
         <div class={CSS.main.mainShorten.loading}>
           <svg
@@ -300,7 +302,7 @@ class Share extends declared(Widget) {
       <div class={CSS.base}>
         <div class={CSS.header.container}>
           <h1 class={CSS.header.heading}>{i18n.heading}</h1>
-          {loadingIconNode}
+          {loadingNode}
         </div>
         <div class={CSS.main.mainContainer}>
           <div class={CSS.main.mainLocation.shareLocationContainer}>
@@ -388,8 +390,8 @@ class Share extends declared(Widget) {
       ? substitute({ summary: portalItem.snippet }, i18n.urlSummary)
       : null;
     if (this.shortenLinkEnabled) {
-      this._shortenShareUrl().then(res => {
-        this._openUrl(res, title, summary, urlTemplate);
+      this._shortenShareUrl().then(shortenedUrl => {
+        this._openUrl(shortenedUrl, title, summary, urlTemplate);
       });
       return;
     }

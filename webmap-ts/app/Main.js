@@ -88,7 +88,8 @@ define(["require", "exports", "Share/ShareWidget", "ApplicationBase/support/item
                         var shareContainer = document.createElement("div");
                         var share = new ShareWidget({
                             view: view,
-                            container: shareContainer
+                            container: shareContainer,
+                            shortenLinkEnabled: true
                         });
                         view.ui.add(share, "top-right");
                         itemUtils_1.findQuery(find, view).then(function () { return itemUtils_1.goToMarker(marker, view); });

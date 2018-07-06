@@ -158,6 +158,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     var shareLocationKey = "shareLocation";
                     if (_this.shareLocationEnabled) {
                         _this._handles.add(watchUtils.init(_this, "view.interacting", function () {
+                            // Once user interacts with map and if shroten link is enabled, reset widget back to default "generate link" state
                             if (_this.shortenLinkEnabled) {
                                 _this._set("linkGenerated", false);
                                 _this._set("shortenedUrl", i18n.clickToGenerate);
@@ -281,19 +282,19 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             var roundedZoom = this._roundValue(zoom);
             // Check if href has "&center"
             if (href.indexOf("&center") !== -1) {
-                var url_1 = href.split("&center")[0];
-                var sep_1 = url_1.indexOf("?") === -1 ? "?" : "&";
-                var shareValues_1 = "" + url_1 + sep_1 + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
+                var path_1 = href.split("&center")[0];
+                var sep_1 = path_1.indexOf("?") === -1 ? "?" : "&";
+                var shareValues_1 = "" + path_1 + sep_1 + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
                 return this._determineViewTypeParams(shareValues_1);
             }
-            var url = href.split("center")[0];
+            var path = href.split("center")[0];
             // If no "?", then append "?". Otherwise, check for "?" and "="
-            var sep = url.indexOf("?") === -1
+            var sep = path.indexOf("?") === -1
                 ? "?"
-                : url.indexOf("?") !== -1 && url.indexOf("=") !== -1
+                : path.indexOf("?") !== -1 && path.indexOf("=") !== -1
                     ? "&"
                     : "";
-            var shareValues = "" + url + sep + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
+            var shareValues = "" + path + sep + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
             return this._determineViewTypeParams(shareValues);
         };
         ShareViewModel.prototype._projectPoint = function (point) {

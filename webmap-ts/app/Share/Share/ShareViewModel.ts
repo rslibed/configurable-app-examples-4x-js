@@ -32,6 +32,7 @@ import esriRequest = require("esri/request");
 // require
 import moduleRequire = require("require");
 
+// Share Item
 import ShareItem = require("./ShareItem");
 
 //----------------------------------
@@ -113,6 +114,7 @@ class ShareViewModel extends declared(Accessor) {
         if (this.shareLocationEnabled) {
           this._handles.add(
             watchUtils.init(this, "view.interacting", () => {
+              // Once user interacts with map and if shroten link is enabled, reset widget back to default "generate link" state
               if (this.shortenLinkEnabled) {
                 this._set("linkGenerated", false);
                 this._set("shortenedUrl", i18n.clickToGenerate);
@@ -344,20 +346,20 @@ class ShareViewModel extends declared(Accessor) {
     const roundedZoom = this._roundValue(zoom);
     // Check if href has "&center"
     if (href.indexOf("&center") !== -1) {
-      const url = href.split("&center")[0];
-      const sep = url.indexOf("?") === -1 ? "?" : "&";
-      const shareValues = `${url}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
+      const path = href.split("&center")[0];
+      const sep = path.indexOf("?") === -1 ? "?" : "&";
+      const shareValues = `${path}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
       return this._determineViewTypeParams(shareValues);
     }
-    const url = href.split("center")[0];
+    const path = href.split("center")[0];
     // If no "?", then append "?". Otherwise, check for "?" and "="
     const sep =
-      url.indexOf("?") === -1
+      path.indexOf("?") === -1
         ? "?"
-        : url.indexOf("?") !== -1 && url.indexOf("=") !== -1
+        : path.indexOf("?") !== -1 && path.indexOf("=") !== -1
           ? "&"
           : "";
-    const shareValues = `${url}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
+    const shareValues = `${path}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
     return this._determineViewTypeParams(shareValues);
   }
 

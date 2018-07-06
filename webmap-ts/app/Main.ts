@@ -128,7 +128,8 @@ class MapExample {
           const shareContainer = document.createElement("div");
           const share = new ShareWidget({
             view,
-            container: shareContainer
+            container: shareContainer,
+            shortenLinkEnabled: true
           });
           view.ui.add(share, "top-right");
           findQuery(find, view).then(() => goToMarker(marker, view));
