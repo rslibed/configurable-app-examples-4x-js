@@ -67,7 +67,7 @@ const GOOGLE_ITEM = new ShareItem({
 const EMAIL_ITEM = new ShareItem({
   id: "email",
   name: "E-mail",
-  urlTemplate: "mailto:?subject={title}&body={summary}%20{url}"
+  urlTemplate: "mailto:?subject={title}&body={summary}%20{url}&target=_blank"
 });
 
 //----------------------------------
