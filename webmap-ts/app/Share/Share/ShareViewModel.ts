@@ -99,7 +99,7 @@ class ShareViewModel extends declared(Accessor) {
         if (this.shortenLinkEnabled) {
           this._generateShareUrl().then(generatedUrl => {
             this.shorten(generatedUrl).then(shortenedUrl =>
-              this._set("shareUrl", res)
+              this._set("shareUrl", shortenedUrl)
             );
           });
         } else {

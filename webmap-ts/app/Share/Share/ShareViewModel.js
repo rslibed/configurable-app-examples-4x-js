@@ -144,7 +144,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     if (_this.shortenLinkEnabled) {
                         _this._generateShareUrl().then(function (generatedUrl) {
                             _this.shorten(generatedUrl).then(function (shortenedUrl) {
-                                return _this._set("shareUrl", res);
+                                return _this._set("shareUrl", shortenedUrl);
                             });
                         });
                     }
