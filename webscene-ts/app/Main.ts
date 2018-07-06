@@ -26,6 +26,7 @@ import i18n = require("dojo/i18n!./nls/resources");
 
 import ShareWidget = require("Share/ShareWidget");
 import ShareItem = require("Share/Share/ShareItem");
+import ExpandWidget = require("esri/widgets/Expand");
 
 const CSS = {
   loading: "configurable-application--loading"
@@ -150,7 +151,13 @@ class SceneExample {
             // shortenLinkEnabled: false,
             // shareItems
           });
-          view.ui.add(share, "top-right");
+          const expand = new ExpandWidget({
+            expandIconClass: "esri-icon-share",
+            view,
+            content: share,
+            expanded: true
+          });
+          view.ui.add(expand, "top-right");
           findQuery(find, view).then(() => goToMarker(marker, view));
         })
       );

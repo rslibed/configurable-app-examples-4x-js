@@ -27,7 +27,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-define(["require", "exports", "Share/ShareWidget", "Share/Share/ShareItem", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper"], function (require, exports, ShareWidget, ShareItem, itemUtils_1, domHelper_1) {
+define(["require", "exports", "Share/ShareWidget", "Share/Share/ShareItem", "esri/widgets/Expand", "ApplicationBase/support/itemUtils", "ApplicationBase/support/domHelper"], function (require, exports, ShareWidget, ShareItem, ExpandWidget, itemUtils_1, domHelper_1) {
     "use strict";
     var CSS = {
         loading: "configurable-application--loading"
@@ -110,7 +110,13 @@ define(["require", "exports", "Share/ShareWidget", "Share/Share/ShareItem", "App
                             // shortenLinkEnabled: false,
                             // shareItems
                         });
-                        view.ui.add(share, "top-right");
+                        var expand = new ExpandWidget({
+                            expandIconClass: "esri-icon-share",
+                            view: view,
+                            content: share,
+                            expanded: true
+                        });
+                        view.ui.add(expand, "top-right");
                         itemUtils_1.findQuery(find, view).then(function () { return itemUtils_1.goToMarker(marker, view); });
                     });
                 });
