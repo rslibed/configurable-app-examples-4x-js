@@ -117,7 +117,7 @@ class ShareViewModel extends declared(Accessor) {
               // Once user interacts with map and if shroten link is enabled, reset widget back to default "generate link" state
               if (this.shortenLinkEnabled) {
                 this._set("linkGenerated", false);
-                this._set("shortenedUrl", i18n.clickToGenerate);
+                // this._set("shortenedUrl", i18n.clickToGenerate);
               }
               this._setUrl();
             }),
@@ -130,7 +130,7 @@ class ShareViewModel extends declared(Accessor) {
         }
         if (this.shortenLinkEnabled) {
           this._set("linkGenerated", false);
-          this._set("shortenedUrl", i18n.clickToGenerate);
+          // this._set("shortenedUrl", i18n.clickToGenerate);
         }
       })
     ]);
