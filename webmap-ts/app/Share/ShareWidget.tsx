@@ -376,7 +376,10 @@ class Share extends declared(Widget) {
   ): void {
     const urlToOpen = substitute(
       {
-        url: encodeURI(url),
+        url: encodeURI(
+          // "http://www.arcgis.com/apps/PublicInformation/index.html"
+          url
+        ),
         title,
         summary
       },

@@ -91,23 +91,16 @@ define(["require", "exports", "Share/ShareWidget", "Share/Share/ShareItem", "esr
                             name: "pinterest",
                             urlTemplate: "https://pinterest.com/pin/create/bookmarklet?&url={url}"
                         });
-                        var REDDIT_ITEM = new ShareItem({
-                            id: "reddit",
-                            name: "Reddit",
-                            className: "icon-social-share",
-                            urlTemplate: "https://reddit.com/submit?url={url}"
-                        });
                         var LINKED_IN = new ShareItem({
                             id: "linkedin",
                             name: "LinkedIn",
                             className: "icon-social-linkedin",
                             urlTemplate: "https://linkedin.com/shareArticle?url={url}"
                         });
-                        var shareItems = [PINTEREST_ITEM, LINKED_IN, REDDIT_ITEM];
+                        var shareItems = [PINTEREST_ITEM, LINKED_IN];
                         var share = new ShareWidget({
                             view: view,
                             container: shareContainer
-                            // shortenLinkEnabled: false,
                             // shareItems
                         });
                         var expand = new ExpandWidget({

@@ -232,7 +232,9 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         };
         Share.prototype._openUrl = function (url, title, summary, urlTemplate) {
             var urlToOpen = lang_1.substitute({
-                url: encodeURI(url),
+                url: encodeURI(
+                // "http://www.arcgis.com/apps/PublicInformation/index.html"
+                url),
                 title: title,
                 summary: summary
             }, urlTemplate);

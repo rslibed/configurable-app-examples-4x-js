@@ -134,23 +134,16 @@ class MapExample {
             urlTemplate:
               "https://pinterest.com/pin/create/bookmarklet?&url={url}"
           });
-          const REDDIT_ITEM = new ShareItem({
-            id: "reddit",
-            name: "Reddit",
-            className: "icon-social-share",
-            urlTemplate: "https://reddit.com/submit?url={url}"
-          });
           const LINKED_IN = new ShareItem({
             id: "linkedin",
             name: "LinkedIn",
             className: "icon-social-linkedin",
             urlTemplate: "https://linkedin.com/shareArticle?url={url}"
           });
-          const shareItems = [PINTEREST_ITEM, LINKED_IN, REDDIT_ITEM];
+          const shareItems = [PINTEREST_ITEM, LINKED_IN];
           const share = new ShareWidget({
             view,
             container: shareContainer
-            // shortenLinkEnabled: false,
             // shareItems
           });
           const expand = new ExpandWidget({
