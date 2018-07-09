@@ -67,7 +67,7 @@ const GOOGLE_ITEM = new ShareItem({
 const EMAIL_ITEM = new ShareItem({
   id: "email",
   name: "E-mail",
-  urlTemplate: "mailto:?subject={title}&body={summary}%20{url}&target=_blank"
+  urlTemplate: "mailto:?subject={title}&body={summary}%20{url}"
 });
 
 //----------------------------------
@@ -96,6 +96,7 @@ class ShareViewModel extends declared(Accessor) {
 
   initialize() {
     this._handles.add([
+      // Watches when view.ready is true to set shortened or non-shortened version of url
       watchUtils.whenTrue(this, "view.ready", () => {
         if (this.shortenLinkEnabled) {
           this._generateShareUrl().then(generatedUrl => {
@@ -109,27 +110,31 @@ class ShareViewModel extends declared(Accessor) {
           });
         }
       }),
+      // Watches the toggling of the shareLocationEnabled property
       watchUtils.init(this, "shareLocationEnabled", () => {
         const shareLocationKey = "shareLocation";
+        // If share location checkbox is toggled, watch for view.interaction to set the url
         if (this.shareLocationEnabled) {
           this._handles.add(
             watchUtils.init(this, "view.interacting", () => {
+              // If shorten link is enabled, reset linkGenerated property to false to reset the UI to the "generate shorten link" state
               if (this.shortenLinkEnabled) {
                 this._set("linkGenerated", false);
-                this._set("shortenedUrl", i18n.clickToGenerate);
               }
+              // Set the share url
               this._setUrl();
             }),
             shareLocationKey
           );
-          // Otherwise, watch  utils is removed from handles to stop watching viewpoint
+          // Otherwise, stop watching view.interaction
         } else {
           this._handles.remove(shareLocationKey);
+          // Set the share url
           this._setUrl();
         }
+        // When user toggles share location checkbox, check if shorten link feature is enabled. If so, reset UI to "generate shorten link" state
         if (this.shortenLinkEnabled) {
           this._set("linkGenerated", false);
-          this._set("shortenedUrl", i18n.clickToGenerate);
         }
       })
     ]);
@@ -266,7 +271,6 @@ class ShareViewModel extends declared(Accessor) {
 
   shorten(url?): IPromise<string> {
     this._set("loading", true);
-    // Uses share Url and making a request to URL shorten API and set new values to properties
     return esriRequest(SHORTEN_API, {
       callbackParamName: "callback",
       query: {
@@ -307,7 +311,7 @@ class ShareViewModel extends declared(Accessor) {
     if (!this.get("view.ready") || !this.shareLocationEnabled) {
       // Check if href has center
       if (href.indexOf("center") !== -1) {
-        // Grab substring before "center" to clear previous values. If substring has extra "&", remove it. Otherwise, give original href
+        // Grab substring before "center" to clear previous values. If substring has extra "&", remove it
         const path =
           href.split("center")[0].indexOf("&") !== -1
             ? href.split("center")[0].slice(0, -1)
@@ -319,16 +323,16 @@ class ShareViewModel extends declared(Accessor) {
     }
 
     const { spatialReference } = this.view;
-    // If SR is WGS84 or Web Mercator, use longitude/latitude values to create url sttring
+    // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to create url share url parameters
     if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
       const { longitude, latitude } = this.view.center;
       const point = new Point({
         longitude,
         latitude
       });
-      return promiseUtils.resolve(this._createUrlString(point));
+      return promiseUtils.resolve(this._generateShareUrlParams(point));
     }
-    // Otherwise, use x and y values to create point and call _projectPoint method to convert values
+    // Otherwise, use x/y values and the spatial reference of the current view to create a gemetry point. Then, project the point using the _projectPoint method
     const { x, y } = this.view.center;
     const pointToConvert = new Point({
       x,
@@ -336,24 +340,24 @@ class ShareViewModel extends declared(Accessor) {
       spatialReference
     });
     return this._projectPoint(pointToConvert).then((convertedPoint: Point) => {
-      return this._createUrlString(convertedPoint);
+      return this._generateShareUrlParams(convertedPoint);
     });
   }
 
-  private _createUrlString(point: Point): string {
-    // User longitude and latitude values to create params for center
+  private _generateShareUrlParams(point: Point): string {
+    // Uses longitude and latitude values to create parameters for center
     const { href } = window.location;
     const { longitude, latitude } = point;
     const roundedLon = this._roundValue(longitude);
     const roundedLat = this._roundValue(latitude);
     const { zoom } = this.view;
     const roundedZoom = this._roundValue(zoom);
-    // Check if href has "&center"
+    // Handles pre existing href. Check if href has "&center"
     if (href.indexOf("&center") !== -1) {
       const path = href.split("&center")[0];
-      const sep = path.indexOf("?") === -1 ? "?" : "&";
+      const sep = "&";
       const shareValues = `${path}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
-      return this._determineViewTypeParams(shareValues);
+      return this._determineViewTypeUrlParams(shareValues);
     }
     const path = href.split("center")[0];
     // If no "?", then append "?". Otherwise, check for "?" and "="
@@ -363,10 +367,25 @@ class ShareViewModel extends declared(Accessor) {
         : path.indexOf("?") !== -1 && path.indexOf("=") !== -1
           ? "&"
           : "";
-    const shareValues = `${path}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
-    return this._determineViewTypeParams(shareValues);
+    const shareParams = `${path}${sep}center=${roundedLon},${roundedLat}&level=${roundedZoom}`;
+    return this._determineViewTypeUrlParams(shareParams);
   }
 
+  private _determineViewTypeUrlParams(shareValues: string): string {
+    const { camera, type } = this.view;
+    // Checks if view.type is 3D, if so add, 3D url parameters
+    if (type === "3d") {
+      const { heading, fov, tilt } = camera;
+      const roundedHeading = this._roundValue(heading);
+      const roundedFov = this._roundValue(fov);
+      const roundedTilt = this._roundValue(tilt);
+      return `${shareValues}&heading=${roundedHeading}&fov=${roundedFov}&tilt=${roundedTilt}`;
+    }
+    // Otherwise, just return original url parameters for 2D
+    return shareValues;
+  }
+
+  // Method to project non-WGS84/non-Web Mercator spatial reference point
   private _projectPoint(point: Point): IPromise<Point> {
     return requireUtils
       .when(moduleRequire, [
@@ -375,16 +394,16 @@ class ShareViewModel extends declared(Accessor) {
         "esri/geometry/SpatialReference"
       ])
       .then(([GeometryService, ProjectParameters, SpatialReference]) => {
-        // Can either use default geometry service url or sevice url provided by user
+        // Allows user to use default geometry service or set the service by providing a url
         const geometryService = new GeometryService({
           url: this.geometryServiceUrl
         });
-        // Create projection parameters to use in geo service
+        // Create projection parameters instance to pass to geometry service
         const params = new ProjectParameters({
           geometries: [point],
           outSpatialReference: SpatialReference.WGS84
         });
-        // Project points
+        // Project point
         return geometryService
           .project(params)
           .catch(function(err: any) {
@@ -394,20 +413,6 @@ class ShareViewModel extends declared(Accessor) {
             return projectedPoints[0] as Point;
           });
       });
-  }
-
-  private _determineViewTypeParams(shareValues: string): string {
-    const { camera, type } = this.view;
-    // Checks if view.type is 3D, if so add, 3D url params
-    if (type === "3d") {
-      const { heading, fov, tilt } = camera;
-      const roundedHeading = this._roundValue(heading);
-      const roundedFov = this._roundValue(fov);
-      const roundedTilt = this._roundValue(tilt);
-      return `${shareValues}&heading=${roundedHeading}&fov=${roundedFov}&tilt=${roundedTilt}`;
-    }
-    // Otherwise, just return original shareValues for 2D
-    return shareValues;
   }
 
   private _roundValue(val: number): number {

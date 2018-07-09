@@ -109,7 +109,7 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
-  //  loading - readOnly
+  //  loading
   //
   //----------------------------------
   @aliasOf("viewModel.loading")
@@ -118,7 +118,7 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
-  //  shareUrl - readOnly
+  //  shareUrl
   //
   //----------------------------------
   @aliasOf("viewModel.shareUrl")
@@ -127,7 +127,7 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
-  //  shortenedUrl - readOnly
+  //  shortenedUrl
   //
   //----------------------------------
   @aliasOf("viewModel.shortenedUrl")
@@ -136,17 +136,17 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
-  //  geometryServiceUrl - readOnly
+  //  geometryServiceUrl
   //
   //----------------------------------
 
   @aliasOf("viewModel.geometryServiceUrl")
   @renderable()
-  geometryServiceurl: string = null;
+  geometryServiceUrl: string = null;
 
   //----------------------------------
   //
-  //  linkGenerated - readOnly
+  //  linkGenerated
   //
   //----------------------------------
   @aliasOf("viewModel.linkGenerated")
@@ -243,6 +243,22 @@ class Share extends declared(Widget) {
         {i18n.generateLink}
       </button>
     );
+    const copyShortenNode = this.linkGenerated ? (
+      <input
+        class={CSS.main.mainUrl.urlInput}
+        bind={this}
+        onclick={this._copyUrl}
+        onkeydown={this._copyUrl}
+        tabindex={0}
+        type="text"
+        value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
+        afterCreate={storeNode}
+        data-node-ref="_urlNode"
+        readOnly
+      />
+    ) : (
+      generateLinkNode
+    );
     const loadingIconNode = this.shortenLinkEnabled ? (
       this.loading ? (
         <div class={CSS.main.mainShorten.loading}>
@@ -262,22 +278,6 @@ class Share extends declared(Widget) {
         </div>
       ) : null
     ) : null;
-    const copyShortenNode = this.linkGenerated ? (
-      <input
-        class={CSS.main.mainUrl.urlInput}
-        bind={this}
-        onclick={this._copyUrl}
-        onkeydown={this._copyUrl}
-        tabindex={0}
-        type="text"
-        value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
-        afterCreate={storeNode}
-        data-node-ref="_urlNode"
-        readOnly
-      />
-    ) : (
-      generateLinkNode
-    );
     return (
       <div class={CSS.base}>
         <div class={CSS.header.container}>
@@ -408,8 +408,8 @@ class Share extends declared(Widget) {
     const { shareIcons } = CSS.main.mainShare;
     // Assign class names of icons to share item
     shareItems.items.forEach((shareItem: any) => {
-      for (const key in shareIcons) {
-        if (key === shareItem.id) {
+      for (const icon in shareIcons) {
+        if (icon === shareItem.id) {
           shareItem.className = shareIcons[shareItem.id];
         }
       }
