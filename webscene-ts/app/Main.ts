@@ -148,7 +148,6 @@ class SceneExample {
           const share = new ShareWidget({
             view,
             container: shareContainer
-            // shortenLinkEnabled: false,
             // shareItems
           });
           const expand = new ExpandWidget({

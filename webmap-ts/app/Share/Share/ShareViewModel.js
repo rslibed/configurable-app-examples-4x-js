@@ -1,5 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -58,11 +56,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
     var ShareViewModel = /** @class */ (function (_super) {
         __extends(ShareViewModel, _super);
         function ShareViewModel() {
-            //----------------------------------
-            //
-            //  Lifecycle
-            //
-            //----------------------------------
             var _this = _super !== null && _super.apply(this, arguments) || this;
             //----------------------------------
             //
@@ -82,12 +75,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             //
             //----------------------------------
             _this.shareUrl = null;
-            //----------------------------------
-            //
-            //  shortenedUrl - readOnly
-            //
-            //----------------------------------
-            _this.shortenedUrl = null;
             //----------------------------------
             //
             // linkGenerated - readOnly
@@ -137,9 +124,15 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             ]);
             return _this;
         }
+        //----------------------------------
+        //
+        //  Lifecycle
+        //
+        //----------------------------------
         ShareViewModel.prototype.initialize = function () {
             var _this = this;
             this._handles.add([
+                // Watches when view.ready is true to set shortened or non-shortened version of url
                 watchUtils.whenTrue(this, "view.ready", function () {
                     if (_this.shortenLinkEnabled) {
                         _this._generateShareUrl().then(function (generatedUrl) {
@@ -149,31 +142,34 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                         });
                     }
                     else {
-                        _this._generateShareUrl().then(function (res) {
-                            _this._set("shareUrl", res);
+                        _this._generateShareUrl().then(function (generatedUrl) {
+                            _this._set("shareUrl", generatedUrl);
                         });
                     }
                 }),
+                // Watches the toggling of the shareLocationEnabled property
                 watchUtils.init(this, "shareLocationEnabled", function () {
                     var shareLocationKey = "shareLocation";
+                    // If share location checkbox is toggled, watch for view.interaction to set the url
                     if (_this.shareLocationEnabled) {
                         _this._handles.add(watchUtils.init(_this, "view.interacting", function () {
-                            // Once user interacts with map and if shroten link is enabled, reset widget back to default "generate link" state
+                            // If shorten link is enabled, reset linkGenerated property to false to reset the UI to the "generate shorten link" state
                             if (_this.shortenLinkEnabled) {
                                 _this._set("linkGenerated", false);
-                                // this._set("shortenedUrl", i18n.clickToGenerate);
                             }
+                            // Set the share url
                             _this._setUrl();
                         }), shareLocationKey);
-                        // Otherwise, watch  utils is removed from handles to stop watching viewpoint
+                        // Otherwise, stop watching view.interaction
                     }
                     else {
                         _this._handles.remove(shareLocationKey);
+                        // Set the share url
                         _this._setUrl();
                     }
+                    // When user toggles share location checkbox, check if shorten link feature is enabled. If so, reset UI to "generate shorten link" state
                     if (_this.shortenLinkEnabled) {
                         _this._set("linkGenerated", false);
-                        // this._set("shortenedUrl", i18n.clickToGenerate);
                     }
                 })
             ]);
@@ -206,7 +202,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         ShareViewModel.prototype.shorten = function (url) {
             var _this = this;
             this._set("loading", true);
-            // Uses share Url and making a request to URL shorten API and set new values to properties
             return esriRequest(SHORTEN_API, {
                 callbackParamName: "callback",
                 query: {
@@ -223,7 +218,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 _this._set("loading", false);
                 if (shortUrl) {
                     _this._set("linkGenerated", true);
-                    _this._set("shortenedUrl", shortUrl);
+                    _this._set("shareUrl", shortUrl);
                     return shortUrl;
                 }
             });
@@ -246,7 +241,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             if (!this.get("view.ready") || !this.shareLocationEnabled) {
                 // Check if href has center
                 if (href.indexOf("center") !== -1) {
-                    // Grab substring before "center" to clear previous values. If substring has extra "&", remove it. Otherwise, give original href
+                    // Grab substring before "center" to clear previous values. If substring has extra "&", remove it
                     var path = href.split("center")[0].indexOf("&") !== -1
                         ? href.split("center")[0].slice(0, -1)
                         : href.split("center")[0];
@@ -256,36 +251,39 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 return promiseUtils.resolve(href);
             }
             var spatialReference = this.view.spatialReference;
-            // If SR is WGS84 or Web Mercator, use longitude/latitude values to create url sttring
+            // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to create url share url parameters
             if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
                 var _a = this.view.center, longitude = _a.longitude, latitude = _a.latitude;
                 var point = new Point({
                     longitude: longitude,
                     latitude: latitude
                 });
-                return promiseUtils.resolve(this._createUrlString(point));
+                return promiseUtils.resolve(this._generateShareUrlParams(point));
             }
-            // Otherwise, use x and y values to create point and call _projectPoint method to convert values
+            // Otherwise, use x/y values and the spatial reference of the current view to create a geometry point. Then, project the point using the _projectPoint method
             var _b = this.view.center, x = _b.x, y = _b.y;
-            var pointToConvert = new Point({ x: x, y: y, spatialReference: spatialReference });
+            var pointToConvert = new Point({
+                x: x,
+                y: y,
+                spatialReference: spatialReference
+            });
             return this._projectPoint(pointToConvert).then(function (convertedPoint) {
-                return _this._createUrlString(convertedPoint);
+                return _this._generateShareUrlParams(convertedPoint);
             });
         };
-        ShareViewModel.prototype._createUrlString = function (point) {
-            // User longitude and latitude values to create params for center
+        ShareViewModel.prototype._generateShareUrlParams = function (point) {
+            // Uses longitude and latitude values to create parameters for center
             var href = window.location.href;
             var longitude = point.longitude, latitude = point.latitude;
             var roundedLon = this._roundValue(longitude);
             var roundedLat = this._roundValue(latitude);
             var zoom = this.view.zoom;
             var roundedZoom = this._roundValue(zoom);
-            // Check if href has "&center"
+            // Handles pre existing href. Check if href has "&center"
             if (href.indexOf("&center") !== -1) {
                 var path_1 = href.split("&center")[0];
-                var sep_1 = path_1.indexOf("?") === -1 ? "?" : "&";
-                var shareValues_1 = "" + path_1 + sep_1 + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
-                return this._determineViewTypeParams(shareValues_1);
+                var shareValues = path_1 + "&center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
+                return this._determineViewTypeUrlParams(shareValues);
             }
             var path = href.split("center")[0];
             // If no "?", then append "?". Otherwise, check for "?" and "="
@@ -294,9 +292,23 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 : path.indexOf("?") !== -1 && path.indexOf("=") !== -1
                     ? "&"
                     : "";
-            var shareValues = "" + path + sep + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
-            return this._determineViewTypeParams(shareValues);
+            var shareParams = "" + path + sep + "center=" + roundedLon + "," + roundedLat + "&level=" + roundedZoom;
+            return this._determineViewTypeUrlParams(shareParams);
         };
+        ShareViewModel.prototype._determineViewTypeUrlParams = function (shareValues) {
+            var _a = this.view, camera = _a.camera, type = _a.type;
+            // Checks if view.type is 3D, if so add, 3D url parameters
+            if (type === "3d") {
+                var heading = camera.heading, fov = camera.fov, tilt = camera.tilt;
+                var roundedHeading = this._roundValue(heading);
+                var roundedFov = this._roundValue(fov);
+                var roundedTilt = this._roundValue(tilt);
+                return shareValues + "&heading=" + roundedHeading + "&fov=" + roundedFov + "&tilt=" + roundedTilt;
+            }
+            // Otherwise, just return original url parameters for 2D
+            return shareValues;
+        };
+        // Method to project non-WGS84/non-Web Mercator spatial reference point
         ShareViewModel.prototype._projectPoint = function (point) {
             var _this = this;
             return requireUtils
@@ -307,16 +319,16 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             ])
                 .then(function (_a) {
                 var GeometryService = _a[0], ProjectParameters = _a[1], SpatialReference = _a[2];
-                // Can either use default geometry service url or sevice url provided by user
+                // Allows user to use default geometry service or set the service by providing a url
                 var geometryService = new GeometryService({
                     url: _this.geometryServiceUrl
                 });
-                // Create projection parameters to use in geo service
+                // Create projection parameters instance to pass to geometry service
                 var params = new ProjectParameters({
                     geometries: [point],
                     outSpatialReference: SpatialReference.WGS84
                 });
-                // Project points
+                // Project point
                 return geometryService
                     .project(params)
                     .catch(function (err) {
@@ -326,19 +338,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     return projectedPoints[0];
                 });
             });
-        };
-        ShareViewModel.prototype._determineViewTypeParams = function (shareValues) {
-            var _a = this.view, camera = _a.camera, type = _a.type;
-            // Checks if view.type is 3D, if so add, 3D url params
-            if (type === "3d") {
-                var heading = camera.heading, fov = camera.fov, tilt = camera.tilt;
-                var roundedHeading = this._roundValue(heading);
-                var roundedFov = this._roundValue(fov);
-                var roundedTilt = this._roundValue(tilt);
-                return shareValues + "&heading=" + roundedHeading + "&fov=" + roundedFov + "&tilt=" + roundedTilt;
-            }
-            // Otherwise, just return original shareValues for 2D
-            return shareValues;
         };
         ShareViewModel.prototype._roundValue = function (val) {
             return parseFloat(val.toFixed(4));
@@ -352,9 +351,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         __decorate([
             decorators_1.property({ readOnly: true })
         ], ShareViewModel.prototype, "shareUrl", void 0);
-        __decorate([
-            decorators_1.property({ readOnly: true })
-        ], ShareViewModel.prototype, "shortenedUrl", void 0);
         __decorate([
             decorators_1.property({ readOnly: true })
         ], ShareViewModel.prototype, "linkGenerated", void 0);
