@@ -1,7 +1,5 @@
 /// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
 /// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
-// dojo
-import i18n = require("dojo/i18n!./nls/resources");
 
 // esri.core
 import Accessor = require("esri/core/Accessor");
@@ -104,31 +102,20 @@ class ShareViewModel extends declared(Accessor) {
           });
         }
       }),
-      // Watches the toggling of the shareLocationEnabled property
       watchUtils.init(this, "shareLocationEnabled", () => {
         const shareLocationKey = "shareLocation";
-        // If share location checkbox is toggled, watch for view.interaction to set the url
+        // If share location checkbox is toggled, watch for view.interaction
         if (this.shareLocationEnabled) {
           this._handles.add(
             watchUtils.init(this, "view.interacting", () => {
-              // If shorten link is enabled, reset linkGenerated property to false to reset the UI to the "generate shorten link" state
-              if (this.shortenLinkEnabled) {
-                this._set("linkGenerated", false);
-              }
-              // Set the share url
-              this._setUrl();
+              this._setUIandURL();
             }),
             shareLocationKey
           );
           // Otherwise, stop watching view.interaction
         } else {
           this._handles.remove(shareLocationKey);
-          // Set the share url
-          this._setUrl();
-        }
-        // When user toggles share location checkbox, check if shorten link feature is enabled. If so, reset UI to "generate shorten link" state
-        if (this.shortenLinkEnabled) {
-          this._set("linkGenerated", false);
+          this._setUIandURL();
         }
       })
     ]);
@@ -272,7 +259,11 @@ class ShareViewModel extends declared(Accessor) {
   //  Private Methods
   //
   //----------------------------------
-  private _setUrl(): void {
+  private _setUIandURL(): void {
+    // If shortenLinkEnabled is true, set linkGenerated to false to reset UI to "Generate Link" state
+    if (this.shortenLinkEnabled) {
+      this._set("linkGenerated", false);
+    }
     this._generateShareUrl().then(url => {
       this._set("shareUrl", url);
     });
@@ -282,7 +273,7 @@ class ShareViewModel extends declared(Accessor) {
     const { href } = window.location;
     // If view is not ready or share location is disabled return href
     if (!this.get("view.ready") || !this.shareLocationEnabled) {
-      // Check if href has center
+      // Check if href has "center"
       if (href.indexOf("center") !== -1) {
         // Grab substring before "center" to clear previous values. If substring has extra "&", remove it
         const path =
@@ -291,12 +282,11 @@ class ShareViewModel extends declared(Accessor) {
             : href.split("center")[0];
         return promiseUtils.resolve(path);
       }
-      // Otherwise return href
       return promiseUtils.resolve(href);
     }
 
     const { spatialReference } = this.view;
-    // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to create url share url parameters
+    // If spatial reference is WGS84 or Web Mercator, use longitude/latitude values to generate the share URL parameters
     if (spatialReference.isWGS84 || spatialReference.isWebMercator) {
       const { longitude, latitude } = this.view.center;
       const point = new Point({
@@ -305,20 +295,20 @@ class ShareViewModel extends declared(Accessor) {
       });
       return promiseUtils.resolve(this._generateShareUrlParams(point));
     }
-    // Otherwise, use x/y values and the spatial reference of the current view to create a geometry point. Then, project the point using the _projectPoint method
+    // Otherwise, use x/y values and the spatial reference of the view to instantiate a geometry point
     const { x, y } = this.view.center;
     const pointToConvert = new Point({
       x,
       y,
       spatialReference
     });
+    // Use pointToConvert to project point. Once projected, pass point to generate the share URL parameters
     return this._projectPoint(pointToConvert).then((convertedPoint: Point) => {
       return this._generateShareUrlParams(convertedPoint);
     });
   }
 
   private _generateShareUrlParams(point: Point): string {
-    // Uses longitude and latitude values to create parameters for center
     const { href } = window.location;
     const { longitude, latitude } = point;
     const roundedLon = this._roundValue(longitude);
@@ -366,7 +356,7 @@ class ShareViewModel extends declared(Accessor) {
         "esri/geometry/SpatialReference"
       ])
       .then(([GeometryService, ProjectParameters, SpatialReference]) => {
-        // Allows user to use default geometry service or set the service by providing a url
+        // Allows user to use default geometry service or set the service by providing a geometry service url
         const geometryService = new GeometryService({
           url: this.geometryServiceUrl
         });
@@ -381,8 +371,8 @@ class ShareViewModel extends declared(Accessor) {
           .catch(function(err: any) {
             console.error("ERROR: ", err);
           })
-          .then((projectedPoints: any) => {
-            return projectedPoints[0] as Point;
+          .then((projectedPoint: any) => {
+            return projectedPoint[0] as Point;
           });
       });
   }

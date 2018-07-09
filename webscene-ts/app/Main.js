@@ -107,6 +107,7 @@ define(["require", "exports", "Share/ShareWidget", "Share/Share/ShareItem", "esr
                         var share = new ShareWidget({
                             view: view,
                             container: shareContainer
+                            // shortenLinkEnabled: false
                             // shareItems
                         });
                         var expand = new ExpandWidget({
