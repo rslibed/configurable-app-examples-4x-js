@@ -66,7 +66,8 @@ const CSS = {
     },
     mainUrl: {
       inputGroup: "esri-share__copy-url-group",
-      urlInput: "esri-share__url-input"
+      urlInput: "esri-share__url-input",
+      clickToGenerate: "esri-share__click-to-generate"
     },
     mainShare: {
       shareContainer: "esri-share__share-container",
@@ -297,6 +298,21 @@ class Share extends declared(Widget) {
         </div>
       ) : null
     ) : null;
+    const inputGenerateNode = this.linkGenerated ? (
+      <input
+        class={CSS.main.mainUrl.urlInput}
+        type="text"
+        onclick={this._copyUrl}
+        onkeydown={this._copyUrl}
+        value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
+        afterCreate={storeNode}
+        bind={this}
+        data-node-ref="_urlNode"
+        readOnly
+      />
+    ) : (
+      <div class={CSS.main.mainUrl.clickToGenerate}>{i18n.clickToGenerate}</div>
+    );
     const copyShortenNode = this.linkGenerated ? copyIconNode : shortenIconNode;
     return (
       <div class={CSS.base}>
@@ -324,17 +340,7 @@ class Share extends declared(Widget) {
             <div class={CSS.main.mainUrl.inputGroup}>
               {this.shortenLinkEnabled ? copyShortenNode : copyIconNode}
               {this.shortenLinkEnabled ? (
-                <input
-                  class={CSS.main.mainUrl.urlInput}
-                  type="text"
-                  onclick={this._copyUrl}
-                  onkeydown={this._copyUrl}
-                  value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
-                  afterCreate={storeNode}
-                  bind={this}
-                  data-node-ref="_urlNode"
-                  readOnly
-                />
+                inputGenerateNode
               ) : (
                 <input
                   class={CSS.main.mainUrl.urlInput}

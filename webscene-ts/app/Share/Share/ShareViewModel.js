@@ -16,7 +16,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "dojo/i18n!./nls/resources", "esri/core/Accessor", "esri/core/Handles", "esri/core/Collection", "esri/core/watchUtils", "esri/core/requireUtils", "esri/core/promiseUtils", "esri/core/accessorSupport/decorators", "esri/geometry/Point", "esri/request", "require", "./ShareItem"], function (require, exports, __extends, __decorate, i18n, Accessor, Handles, Collection, watchUtils, requireUtils, promiseUtils, decorators_1, Point, esriRequest, moduleRequire, ShareItem) {
+define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/core/tsSupport/decorateHelper", "esri/core/Accessor", "esri/core/Handles", "esri/core/Collection", "esri/core/watchUtils", "esri/core/requireUtils", "esri/core/promiseUtils", "esri/core/accessorSupport/decorators", "esri/geometry/Point", "esri/request", "require", "./ShareItem"], function (require, exports, __extends, __decorate, Accessor, Handles, Collection, watchUtils, requireUtils, promiseUtils, decorators_1, Point, esriRequest, moduleRequire, ShareItem) {
     "use strict";
     //----------------------------------
     //
@@ -161,7 +161,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                             // Once user interacts with map and if shroten link is enabled, reset widget back to default "generate link" state
                             if (_this.shortenLinkEnabled) {
                                 _this._set("linkGenerated", false);
-                                _this._set("shortenedUrl", i18n.clickToGenerate);
+                                // this._set("shortenedUrl", i18n.clickToGenerate);
                             }
                             _this._setUrl();
                         }), shareLocationKey);
@@ -173,7 +173,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                     }
                     if (_this.shortenLinkEnabled) {
                         _this._set("linkGenerated", false);
-                        _this._set("shortenedUrl", i18n.clickToGenerate);
+                        // this._set("shortenedUrl", i18n.clickToGenerate);
                     }
                 })
             ]);
