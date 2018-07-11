@@ -237,7 +237,6 @@ class Share extends declared(Widget) {
         bind={this}
         onclick={this._shortenShareUrl}
         onkeydown={this._shortenShareUrl}
-        tabIndex={0}
         class={CSS.main.mainShorten.shortenUrl}
       >
         {i18n.generateLink}
@@ -249,7 +248,6 @@ class Share extends declared(Widget) {
         bind={this}
         onclick={this._copyUrl}
         onkeydown={this._copyUrl}
-        tabindex={0}
         type="text"
         value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
         afterCreate={storeNode}
