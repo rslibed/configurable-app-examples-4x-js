@@ -73,10 +73,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             //----------------------------------
             //----------------------------------
             //
-            //  shareUrl - readOnly
+            //  shortening - readOnly
             //
             //----------------------------------
-            _this.shareUrl = null;
+            _this.shortening = null;
             //----------------------------------
             //
             // linkGenerated - readOnly (determines UI state)
@@ -85,10 +85,10 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             _this.linkGenerated = false;
             //----------------------------------
             //
-            //  loading - readOnly
+            //  shareUrl - readOnly
             //
             //----------------------------------
-            _this.loading = false;
+            _this.shareUrl = null;
             //----------------------------------
             //
             //  view
@@ -185,6 +185,20 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(ShareViewModel.prototype, "shortenState", {
+            //----------------------------------
+            //
+            //  ShortenState
+            //
+            //----------------------------------
+            get: function () {
+                var view = this.get("view");
+                var ready = this.get("shortening");
+                return !ready ? "ready" : view ? "shortening" : "loading";
+            },
+            enumerable: true,
+            configurable: true
+        });
         //----------------------------------
         //
         //  Public Method
@@ -192,7 +206,7 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         //----------------------------------
         ShareViewModel.prototype.shorten = function (url) {
             var _this = this;
-            this._set("loading", true);
+            this._set("shortening", true);
             return esriRequest(SHORTEN_API, {
                 callbackParamName: "callback",
                 query: {
@@ -201,12 +215,12 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
             })
                 .catch(function (res) {
-                _this._set("loading", false);
+                _this._set("shortening", false);
                 return res;
             })
                 .then(function (res) {
                 var shortUrl = res.data && res.data.data && res.data.data.url;
-                _this._set("loading", false);
+                _this._set("shortening", false);
                 if (shortUrl) {
                     _this._set("linkGenerated", true);
                     _this._set("shareUrl", shortUrl);
@@ -335,14 +349,20 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             })
         ], ShareViewModel.prototype, "state", null);
         __decorate([
+            decorators_1.property({
+                dependsOn: ["shortening"],
+                readOnly: true
+            })
+        ], ShareViewModel.prototype, "shortenState", null);
+        __decorate([
             decorators_1.property({ readOnly: true })
-        ], ShareViewModel.prototype, "shareUrl", void 0);
+        ], ShareViewModel.prototype, "shortening", void 0);
         __decorate([
             decorators_1.property({ readOnly: true })
         ], ShareViewModel.prototype, "linkGenerated", void 0);
         __decorate([
             decorators_1.property({ readOnly: true })
-        ], ShareViewModel.prototype, "loading", void 0);
+        ], ShareViewModel.prototype, "shareUrl", void 0);
         __decorate([
             decorators_1.property()
         ], ShareViewModel.prototype, "view", void 0);

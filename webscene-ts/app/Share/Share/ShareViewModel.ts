@@ -79,6 +79,13 @@ const SHORTEN_API = "https://arcg.is/prod/shorten";
 //----------------------------------
 type State = "ready" | "loading" | "disabled";
 
+//----------------------------------
+//
+//  Shortened State
+//
+//----------------------------------
+type ShortenState = "ready" | "loading" | "shortening";
+
 @subclass("ShareViewModel")
 class ShareViewModel extends declared(Accessor) {
   //----------------------------------
@@ -145,6 +152,21 @@ class ShareViewModel extends declared(Accessor) {
 
   //----------------------------------
   //
+  //  ShortenState
+  //
+  //----------------------------------
+  @property({
+    dependsOn: ["shortening"],
+    readOnly: true
+  })
+  get shortenState(): ShortenState {
+    const view = this.get("view");
+    const ready = this.get("shortening");
+    return !ready ? "ready" : view ? "shortening" : "loading";
+  }
+
+  //----------------------------------
+  //
   //  Private Variables
   //
   //----------------------------------
@@ -156,13 +178,14 @@ class ShareViewModel extends declared(Accessor) {
   //  Properties
   //
   //----------------------------------
+
   //----------------------------------
   //
-  //  shareUrl - readOnly
+  //  shortening - readOnly
   //
   //----------------------------------
   @property({ readOnly: true })
-  shareUrl: string = null;
+  shortening: boolean = null;
 
   //----------------------------------
   //
@@ -174,11 +197,11 @@ class ShareViewModel extends declared(Accessor) {
 
   //----------------------------------
   //
-  //  loading - readOnly
+  //  shareUrl - readOnly
   //
   //----------------------------------
   @property({ readOnly: true })
-  loading = false;
+  shareUrl: string = null;
 
   //----------------------------------
   //
@@ -231,7 +254,7 @@ class ShareViewModel extends declared(Accessor) {
   //
   //----------------------------------
   shorten(url?): IPromise<string> {
-    this._set("loading", true);
+    this._set("shortening", true);
     return esriRequest(SHORTEN_API, {
       callbackParamName: "callback",
       query: {
@@ -240,12 +263,12 @@ class ShareViewModel extends declared(Accessor) {
       }
     })
       .catch(res => {
-        this._set("loading", false);
+        this._set("shortening", false);
         return res;
       })
       .then(res => {
         const shortUrl = res.data && res.data.data && res.data.data.url;
-        this._set("loading", false);
+        this._set("shortening", false);
         if (shortUrl) {
           this._set("linkGenerated", true);
           this._set("shareUrl", shortUrl);

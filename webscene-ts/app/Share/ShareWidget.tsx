@@ -59,7 +59,7 @@ const CSS = {
     },
     mainShorten: {
       shortenUrl: "esri-share__shorten-url",
-      loading: "esri-share--loading"
+      spinner: "esri-share--spinner"
     },
     mainUrl: {
       inputGroup: "esri-share__copy-url-group",
@@ -86,7 +86,7 @@ const CSS = {
   icons: {
     widgetIcon: "icon-ui-share",
     svgIcon: "svg-icon",
-    loadingIcon: "esri-share--loading-icon",
+    spinnerIcon: "esri-share--spinner-icon",
     esriRotatingIcon: "esri-share--esri-rotating"
   }
 };
@@ -109,30 +109,12 @@ class Share extends declared(Widget) {
 
   //----------------------------------
   //
-  //  loading
-  //
-  //----------------------------------
-  @aliasOf("viewModel.loading")
-  @renderable()
-  loading: boolean = null;
-
-  //----------------------------------
-  //
   //  shareUrl
   //
   //----------------------------------
   @aliasOf("viewModel.shareUrl")
   @renderable()
   shareUrl: string = null;
-
-  //----------------------------------
-  //
-  //  shortenedUrl
-  //
-  //----------------------------------
-  @aliasOf("viewModel.shortenedUrl")
-  @renderable()
-  shortenedUrl: string = null;
 
   //----------------------------------
   //
@@ -143,15 +125,6 @@ class Share extends declared(Widget) {
   @aliasOf("viewModel.geometryServiceUrl")
   @renderable()
   geometryServiceUrl: string = null;
-
-  //----------------------------------
-  //
-  //  linkGenerated
-  //
-  //----------------------------------
-  @aliasOf("viewModel.linkGenerated")
-  @renderable()
-  linkGenerated: boolean = null;
 
   //----------------------------------
   //
@@ -225,14 +198,29 @@ class Share extends declared(Widget) {
   //----------------------------------
 
   render() {
-    const { state, shareLocationEnabled } = this.viewModel;
+    const {
+      state,
+      shortenState,
+      linkGenerated,
+      shareLocationEnabled
+    } = this.viewModel;
     const shareItemNodes = this._renderShareItems();
     const shareItemNode =
       state === "ready" && shareItemNodes.length ? [shareItemNodes] : null;
-    const inputSubheader = this.linkGenerated
-      ? i18n.clipboard
-      : i18n.generateLink;
-    const generateLinkNode = (
+    const inputSubheader = linkGenerated ? i18n.clipboard : i18n.generateLink;
+    const copyShortenNode = linkGenerated ? (
+      <input
+        class={CSS.main.mainUrl.urlInput}
+        bind={this}
+        onclick={this._copyUrl}
+        onkeydown={this._copyUrl}
+        type="text"
+        value={this.shareUrl}
+        afterCreate={storeNode}
+        data-node-ref="_urlNode"
+        readOnly
+      />
+    ) : (
       <button
         bind={this}
         onclick={this._shortenShareUrl}
@@ -242,24 +230,9 @@ class Share extends declared(Widget) {
         {i18n.generateLink}
       </button>
     );
-    const copyShortenNode = this.linkGenerated ? (
-      <input
-        class={CSS.main.mainUrl.urlInput}
-        bind={this}
-        onclick={this._copyUrl}
-        onkeydown={this._copyUrl}
-        type="text"
-        value={this.shortenedUrl ? this.shortenedUrl : this.shareUrl}
-        afterCreate={storeNode}
-        data-node-ref="_urlNode"
-        readOnly
-      />
-    ) : (
-      generateLinkNode
-    );
-    const loadingIconNode = this.shortenLinkEnabled ? (
-      this.loading ? (
-        <div class={CSS.main.mainShorten.loading}>
+    const spinnerIconNode = this.shortenLinkEnabled ? (
+      shortenState === "shortening" ? (
+        <div class={CSS.main.mainShorten.spinner}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -268,7 +241,7 @@ class Share extends declared(Widget) {
             class={this.classes(
               CSS.icons.svgIcon,
               CSS.icons.esriRotatingIcon,
-              CSS.icons.loadingIcon
+              CSS.icons.spinnerIcon
             )}
           >
             <path d="M27.518 8.338c.324.37.772.94 1.261 1.727a13.499 13.499 0 0 1 1.986 7.41c-.019 3.243-1.41 7.185-4.559 10.081-3.085 2.902-7.94 4.492-12.611 3.566-4.697-.832-8.864-4.161-10.853-8.38-2.043-4.23-1.863-9.035-.373-12.647 1.463-3.672 4.051-6.09 6.098-7.421C10.551 1.336 12.092.889 12.389.802c1.234-.356 2.457-.18 3.282.309.839.511 1.281 1.259 1.276 2.105-.079 1.717-1.406 3.039-2.86 3.478-.19.051-1.158.258-2.564.99a10.6 10.6 0 0 0-4.43 4.522c-1.216 2.318-1.698 5.672-.504 8.872 1.158 3.185 4.042 6.059 7.693 7.058 3.629 1.078 7.773.199 10.671-2.06 2.944-2.244 4.563-5.648 4.855-8.66.369-3.046-.465-5.615-1.261-7.222a13.163 13.163 0 0 0-1.084-1.812l-.45-.601.504.559z" />
@@ -280,7 +253,7 @@ class Share extends declared(Widget) {
       <div class={CSS.base}>
         <div class={CSS.header.container}>
           <h1 class={CSS.header.heading}>{i18n.heading}</h1>
-          {loadingIconNode}
+          {spinnerIconNode}
         </div>
         <div class={CSS.main.mainContainer}>
           <div class={CSS.main.mainLocation.shareLocationContainer}>

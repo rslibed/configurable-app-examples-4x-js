@@ -14,7 +14,7 @@
   display: inline-block;
   width: 100%;
 }
-.esri-share .esri-share__header-container .esri-share--loading {
+.esri-share .esri-share__header-container .esri-share--spinner {
   position: absolute;
   top: 8px;
   font-size: 15px;
@@ -85,7 +85,7 @@
   margin: 0;
 }
 
-html[dir=ltr] .esri-share .esri-share__header-container .esri-share--loading {
+html[dir=ltr] .esri-share .esri-share__header-container .esri-share--spinner {
   right: 8px;
 }
 html[dir=ltr] .esri-share .esri-share__main-container .esri-share__main-header {
@@ -98,7 +98,7 @@ html[dir=ltr] .esri-share .esri-share__main-container .esri-share__copy-containe
   padding-left: 5px;
 }
 
-html[dir=rtl] .esri-share .esri-share__header-container .esri-share--loading {
+html[dir=rtl] .esri-share .esri-share__header-container .esri-share--spinner {
   left: 8px;
 }
 html[dir=rtl] .esri-share .esri-share__main-container .esri-share__main-header {
@@ -111,7 +111,7 @@ html[dir=rtl] .esri-share .esri-share__main-container .esri-share__copy-containe
   padding-right: 5px;
 }
 
-.esri-share--loading-icon {
+.esri-share--spinner-icon {
   width: 20px;
 }
 
